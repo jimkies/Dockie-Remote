@@ -1,0 +1,65 @@
+name: DockieRemote
+options:
+  bundleIdPrefix: com.example.dockie
+  deploymentTarget:
+    iOS: "17.0"
+  createIntermediateGroups: true
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    SWIFT_STRICT_CONCURRENCY: complete
+    MARKETING_VERSION: "1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    # Set your own team in Xcode (Signing & Capabilities) or here.
+    DEVELOPMENT_TEAM: ""
+    CODE_SIGN_STYLE: Automatic
+targets:
+  DockieRemote:
+    type: application
+    platform: iOS
+    sources: [DockieRemote]
+    settings:
+      base:
+        # Free Apple IDs need a bundle id nobody else has registered. Change "example" to something of yours.
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.dockie.remote
+        TARGETED_DEVICE_FAMILY: "1"
+        GENERATE_INFOPLIST_FILE: NO
+    info:
+      path: DockieRemote/Info.plist
+      properties:
+        CFBundleDisplayName: Dockie Remote
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
+        NSLocalNetworkUsageDescription: Dockie Remote finds and connects to Dockie on your PC over your local network.
+        NSBonjourServices: [_dockie._tcp]
+        NSCameraUsageDescription: Dockie Remote uses the camera to scan the pairing QR code shown by Dockie on your PC.
+        NSAppTransportSecurity:
+          # Covers unqualified and .local host names.
+          NSAllowsLocalNetworking: true
+          # NSAllowsLocalNetworking does not cover numeric IP addresses, and iOS 17 applies ATS to them.
+          # iOS 17 accepts CIDR ranges here. These allow plain ws:// to private LAN and Tailscale (100.64.0.0/10) addresses only.
+          NSExceptionDomains:
+            10.0.0.0/8: {NSExceptionAllowsInsecureHTTPLoads: true}
+            172.16.0.0/12: {NSExceptionAllowsInsecureHTTPLoads: true}
+            192.168.0.0/16: {NSExceptionAllowsInsecureHTTPLoads: true}
+            100.64.0.0/10: {NSExceptionAllowsInsecureHTTPLoads: true}
+  DockieRemoteTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources: [DockieRemoteTests]
+    dependencies:
+      - target: DockieRemote
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.dockie.remote.tests
+        GENERATE_INFOPLIST_FILE: YES
+schemes:
+  DockieRemote:
+    build:
+      targets:
+        DockieRemote: all
+        DockieRemoteTests: [test]
+    test:
+      targets: [DockieRemoteTests]
